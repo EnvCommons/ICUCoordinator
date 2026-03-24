@@ -172,7 +172,7 @@ class ICUCoordinatorEnvironment(Environment):
         sc = self.sim.config
         dashboard = self.sim.format_dashboard()
 
-        prompt = f"""You are the Bed Coordinator at Mercy General Hospital, a 150-bed community hospital.
+        prompt = f"""You are the Bed Coordinator at Asimov General Hospital, a 150-bed community hospital.
 Your role is to manage bed allocation, patient admissions, transfers, discharges, staffing,
 operating room scheduling, and ambulance diversion decisions over a {sc.duration_hours}-hour period.
 
@@ -210,24 +210,19 @@ AVAILABLE TOOLS:
   7. cancel_elective(surgery_id) - Cancel an elective surgery (frees OR, but penalizes score).
   8. advance_time(hours) - Advance 1-4 hours. Processes all events and returns results.
 
-SCORING:
-  Each hour you receive a score from 0 to 1:
-    1.0 - penalties where penalties include:
-    - 0.50 per death
-    - 0.001 per patient currently boarding in ED
-    - 0.01 per critical patient (ESI-1/2) waiting for ICU
-    - 0.02 per understaffed unit
-    - 0.05 while diversion is active
-  Final reward = average of all hourly scores (minus small penalty per cancelled surgery).
-
-STRATEGY TIPS:
-  - Prioritize ICU placement for ESI-1/2 patients to prevent deaths.
-  - Discharge ready patients promptly to free beds (beds need 45-60 min cleaning after discharge).
-  - Transfer patients to lower-acuity units when they improve (e.g., ICU -> stepdown).
-  - Request agency nurses early (4-hour delay) if you anticipate staffing shortfalls.
-  - Use diversion sparingly - it reduces arrivals but costs 0.05/hr in score.
-  - Plan ahead for shift changes (every 12 hours) and surgical schedules.
-  - View the dashboard frequently to stay informed.
+WHAT MATTERS MOST:
+  Your top priority is patient safety — every patient death is a serious outcome and will be
+  heavily scrutinised. Beyond that, you'll be evaluated on how well you keep the hospital
+  running smoothly:
+  - Patients boarding in the ED waiting for a bed reflects poorly on flow management.
+  - Critical patients (ESI-1/2) stuck without an ICU bed are at immediate risk — delays here
+    are treated very seriously.
+  - Units running short-staffed put patients in danger and will be flagged.
+  - Diverting ambulances keeps new patients from coming in but signals the hospital is in
+    trouble — use it only when you genuinely need the relief.
+  - Cancelling elective surgeries disrupts patient care plans, so avoid it unless necessary.
+  Your overall performance is judged on how consistently you maintain safe, well-managed
+  operations across the entire shift.
 
 WORKFLOW: View dashboard -> Make decisions (admit/transfer/discharge/staff/diversion) -> Advance time -> Repeat
 

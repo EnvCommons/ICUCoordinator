@@ -186,7 +186,7 @@ SCENARIO_CONFIGS: dict[str, ScenarioConfig] = {
         staffing_multiplier=1.0,
         trauma_multiplier=1.0,
         mass_casualty_hour=None,
-        description="Typical Tuesday-Wednesday operations at Mercy General Hospital.",
+        description="Typical Tuesday-Wednesday operations at Asimov General Hospital.",
     ),
     "winter_surge": ScenarioConfig(
         name="winter_surge",

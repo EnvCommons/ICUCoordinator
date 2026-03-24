@@ -4,9 +4,11 @@
 
 ## Description
 
-ICU Coordinator is a hyper-realistic hospital bed management simulation where agents act as the bed coordinator at a 150-bed community hospital. Agents must allocate beds, manage staffing, handle patient admissions and discharges, schedule operating rooms, and make ambulance diversion decisions under stochastic patient arrivals. The simulation parameters are grounded in medical literature including SCCM ICU admission guidelines, AHRQ nurse staffing research, and MIMIC-III clinical data patterns.
+ICU Coordinator is a hospital bed management simulation where agents act as the bed coordinator at a 150-bed community hospital. Agents must allocate beds, manage staffing, handle patient admissions and discharges, schedule operating rooms, and make ambulance diversion decisions under stochastic patient arrivals. The simulation parameters are grounded in medical literature including SCCM ICU admission guidelines, AHRQ nurse staffing research, and MIMIC-III clinical data patterns.
 
-The environment models realistic patient flow from ED triage through admission, treatment, and discharge, with stochastic deterioration, mortality from ICU delays and understaffing, bed turnover times, 12-hour nursing shifts, and surgical patient pipelines. Agents face constrained planning problems with ethical tradeoffs between competing demands for scarce resources.
+The environment models patient flow from ED triage through admission, treatment, and discharge, with stochastic deterioration, mortality from ICU delays and understaffing, bed turnover times, 12-hour nursing shifts, and surgical patient pipelines. Agents face constrained planning problems with ethical tradeoffs between competing demands for scarce resources.
+
+Note: this is a synthetic environment which is primarily AI-generated; please test thoroughly before use in any RL pipeline.
 
 ## Capabilities
 
@@ -88,7 +90,7 @@ No external API keys or secrets are required. The environment is fully self-cont
 
 ## Safety
 
-This environment simulates hospital resource allocation decisions that involve patient mortality risk. While the simulation is entirely artificial, the ethical dimensions are realistic: agents must make triage-like decisions about which patients receive scarce ICU beds, when to cancel elective surgeries, and how to balance staff wellbeing against patient safety. The simulation does not model individual patient demographics or protected characteristics; allocation decisions are based solely on clinical acuity (ESI scores) and resource availability.
+This environment simulates hospital resource allocation decisions that involve patient mortality risk. While the simulation is entirely artificial, the ethical dimensions are: agents must make triage-like decisions about which patients receive scarce ICU beds, when to cancel elective surgeries, and how to balance staff wellbeing against patient safety. This environment is for research purposes only.
 
 ## Citations
 

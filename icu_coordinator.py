@@ -369,8 +369,9 @@ Begin managing the hospital. Your first action should be to review the dashboard
     async def advance_time(self, params: AdvanceTimeParams) -> ToolOutput:
         """Advance the simulation by 1-4 hours. Processes all events including
         patient arrivals, surgeries, deterioration, mortality, and shift changes.
-        Returns a summary of events and the hourly score(s). When the simulation
-        period ends, returns finished=True with the final cumulative reward."""
+        Returns a summary of events and the hourly score(s). The reward is paid
+        once, when the simulation period ends: finished=True with the mean
+        hourly score over the whole period."""
         assert self.sim is not None
 
         if self.finished:
@@ -441,7 +442,11 @@ Begin managing the hospital. Your first action should be to review the dashboard
                 finished=True,
             )
         else:
-            step_reward = float(np.mean(hourly_scores)) if hourly_scores else 0.0
+            # Only the final step carries reward: the episode score is the mean
+            # over the whole horizon. Per-step rewards would let an episode that
+            # stops early (when hours are easiest) score like a full one, and
+            # would weight hours by how many advance_time calls covered them.
+            # The hourly scores stay visible in the text and metadata.
             return ToolOutput(
                 blocks=[TextBlock(text="\n".join(lines))],
                 metadata={
@@ -450,6 +455,6 @@ Begin managing the hospital. Your first action should be to review the dashboard
                     "hourly_scores": hourly_scores,
                     "events_count": len(all_events),
                 },
-                reward=step_reward,
+                reward=0.0,
                 finished=False,
             )

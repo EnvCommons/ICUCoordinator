@@ -2298,5 +2298,71 @@ class TestCitationConsistency:
         )
 
 
+# ========================== EPISODE REWARD TESTS ==========================
+
+def average_of_nonzero(step_rewards):
+    """Episode score as a trainer that averages the non-zero step rewards sees it."""
+    nz = [r for r in step_rewards if r != 0.0]
+    return sum(nz) / len(nz) if nz else 0.0
+
+
+async def play(scenario, seed, pace, max_hours=None):
+    """Advance without other actions; return (step rewards, env)."""
+    env = await setup_env(scenario, seed)
+    rewards = []
+    finished = False
+    while not finished:
+        if max_hours is not None and env.sim.state.current_hour >= max_hours:
+            break
+        result = await env.advance_time(AdvanceTimeParams(hours=pace))
+        rewards.append(result.reward)
+        finished = result.finished
+    return rewards, env
+
+
+class TestEpisodeReward:
+
+    @pytest.mark.asyncio
+    async def test_intermediate_steps_pay_nothing(self):
+        rewards, env = await play("normal_weekday", 0, pace=1)
+        assert all(r == 0.0 for r in rewards[:-1])
+        assert rewards[-1] == pytest.approx(env.sim.get_final_reward())
+        assert rewards[-1] > 0.0
+        await env.teardown()
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("scenario", ["normal_weekday", "winter_surge",
+                                          "mass_casualty", "staffing_crisis"])
+    async def test_stopping_early_does_not_pay(self, scenario):
+        full, env_full = await play(scenario, 0, pace=1)
+        horizon = int(env_full.sim.state.simulation_duration)
+        truncated, env_tr = await play(scenario, 0, pace=1, max_hours=horizon // 3)
+        assert not env_tr.finished
+        for agg in (average_of_nonzero, sum):
+            assert agg(truncated) == 0.0
+            assert agg(full) == pytest.approx(env_full.sim.get_final_reward())
+        await env_full.teardown()
+        await env_tr.teardown()
+
+    @pytest.mark.asyncio
+    async def test_reward_does_not_depend_on_pacing(self):
+        by_pace = {}
+        for pace in (1, 4):
+            rewards, env = await play("mass_casualty", 1, pace=pace)
+            by_pace[pace] = (average_of_nonzero(rewards), sum(rewards))
+            await env.teardown()
+        assert by_pace[1] == pytest.approx(by_pace[4])
+
+    @pytest.mark.asyncio
+    async def test_dashboard_lists_only_staffable_units(self):
+        env = await setup_env()
+        text = (await env.view_dashboard(ViewDashboardParams())).blocks[0].text
+        staffable = {"ed", "icu", "stepdown", "medsurg_a", "medsurg_b", "pacu"}
+        rows = [line.split()[0] for line in text.splitlines()
+                if line.split() and line.split()[0].islower()]
+        assert rows and set(rows) <= staffable, rows
+        await env.teardown()
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

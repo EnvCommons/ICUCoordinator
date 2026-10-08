@@ -44,7 +44,7 @@ Each task simulates a continuous period of hospital operations. The agent makes 
 
 ## Reward Structure
 
-This is a dense, verifiable reward environment with no LLM grader. Each hour, the agent receives a score from 0 to 1:
+This is a verifiable reward environment with no LLM grader. Each simulated hour is scored from 0 to 1, and the hourly scores are shown after every `advance_time`:
 
 $$\text{score}_t = \max(0, \; 1.0 - \text{penalties})$$
 
@@ -55,7 +55,7 @@ Penalties include:
 - **0.05** per hour of ambulance diversion
 - **0.001** per patient boarding in the ED awaiting an inpatient bed
 
-The final reward is the mean of all hourly scores, with a small additional penalty per cancelled elective surgery.
+The reward is paid once, on the `advance_time` call that ends the simulation: the mean of all hourly scores over the whole period, minus 0.01 per cancelled elective surgery. Earlier `advance_time` calls return reward 0, so an episode that stops before the end of the period earns nothing, and every hour counts equally however the agent paces `advance_time`.
 
 ## Data
 

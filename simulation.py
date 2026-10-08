@@ -1223,7 +1223,7 @@ class HospitalSimulation:
 
         # OR status
         or_unit = self.state.units[UnitName.OR.value]
-        lines.append(f"{'or':<12} {or_unit.total_beds:>5} {or_unit.occupied_beds:>4} "
+        lines.append(f"{'OR rooms':<12} {or_unit.total_beds:>5} {or_unit.occupied_beds:>4} "
                       f"{'':>5} {or_unit.total_beds - or_unit.occupied_beds:>5} "
                       f"{'':>6} {'':>6} {'':>8}")
 

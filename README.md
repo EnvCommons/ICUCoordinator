@@ -1,6 +1,6 @@
 # ICU Coordinator
 
-[![⭐ OpenReward Environment](https://img.shields.io/badge/%E2%AD%90%20OpenReward-Environment-f7e6cc)](https://openreward.ai/GeneralReasoning/icu-coordinator)
+[![⭐ OpenReward Environment](https://img.shields.io/badge/%E2%AD%90%20OpenReward-Environment-f7e6cc)](https://openreward.ai/GeneralReasoning/ICUCoordinator)
 
 ## Description
 
@@ -24,18 +24,18 @@ This environment is computationally lightweight. The simulation runs entirely in
 
 ## License
 
-[ORLv1](https://openreward.ai/orlv1.md).
+[MIT](https://opensource.org/licenses/MIT).
 
 ## Tasks
 
-There are 20 training tasks across 4 scenarios (5 seeds each):
+There are 20 tasks in the `train` split across 4 scenarios (5 seeds each):
 
 - **Normal Weekday** (48h): Typical Tuesday-Wednesday operations at 70% occupancy.
 - **Winter Surge** (72h): Flu/respiratory surge with +30% arrivals and higher acuity.
 - **Mass Casualty** (48h): Multi-vehicle accident at hour 6 brings 15 trauma patients.
 - **Staffing Crisis** (48h): 30% nurse shortage due to call-outs and vacancies.
 
-And 10 test tasks across 2 scenarios (5 seeds each):
+And 10 tasks in the `test` split across 2 scenarios (5 seeds each):
 
 - **Pandemic Wave** (72h): +50% arrivals, 90% initial occupancy, 15% staff shortage.
 - **Holiday Weekend** (72h): Skeleton staffing with +20% trauma cases.
@@ -44,7 +44,7 @@ Each task simulates a continuous period of hospital operations. The agent makes 
 
 ## Reward Structure
 
-This is a dense, verifiable reward environment with no LLM grader. Each hour, the agent receives a score from 0 to 1:
+This is a dense, verifiable reward environment with no LLM grader. Each simulated hour receives a score from 0 to 1:
 
 $$\text{score}_t = \max(0, \; 1.0 - \text{penalties})$$
 
@@ -55,7 +55,7 @@ Penalties include:
 - **0.05** per hour of ambulance diversion
 - **0.001** per patient boarding in the ED awaiting an inpatient bed
 
-The final reward is the mean of all hourly scores, with a small additional penalty per cancelled elective surgery.
+Each `advance_time` call returns the mean of the hourly scores for the hours it advanced. The call that ends the simulation returns the final reward: the mean of all hourly scores minus 0.01 per cancelled elective surgery, floored at 0.
 
 ## Data
 
@@ -82,7 +82,7 @@ ICU Coordinator is a multi-turn environment. Each simulation lasts 48-72 hours w
 
 ## Environment Difficulty
 
-The environment presents significant challenges due to stochastic arrivals, capacity constraints, and cascading consequences of poor decisions. Deaths are rare but devastating to the score. Effective management requires proactive discharge planning, ICU prioritization, and anticipatory staffing requests.
+The environment presents significant challenges due to stochastic arrivals, capacity constraints, and cascading consequences of poor decisions. A single death removes 0.5 from that hour's score. Effective management requires proactive discharge planning, ICU prioritization, and anticipatory staffing requests.
 
 ## Other Environment Requirements
 
@@ -100,6 +100,6 @@ This environment simulates hospital resource allocation decisions that involve p
   title     = {ICU Coordinator},
   year      = {2026},
   publisher = {OpenReward},
-  url       = {https://openreward.ai/GeneralReasoning/icu-coordinator}
+  url       = {https://openreward.ai/GeneralReasoning/ICUCoordinator}
 }
 ```
